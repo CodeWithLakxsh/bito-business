@@ -2,7 +2,7 @@
 
 ## Overview
 
-Bito Business is a Flutter admin dashboard that operates the Bito food-delivery/restaurant ecosystem. It is a thin client over Google Firebase services, with two additional integrations:
+Biteo Business is a Flutter admin dashboard that operates the Biteo food-delivery/restaurant ecosystem. It is a thin client over Google Firebase services, with two additional integrations:
 
 1. A **Cloud Run HTTP endpoint** used to fan out push notifications to all users.
 2. A **Telegram bot** used to push operational alerts (new support tickets, AI representative requests, blocked users) to an ops chat.

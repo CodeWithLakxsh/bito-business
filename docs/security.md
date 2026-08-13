@@ -1,6 +1,6 @@
 # Security
 
-This document records the security posture of Bito Business at the time of the v1.0.0 repository preparation. It distinguishes issues that are **fixed now** from those that are **documented and require future architectural change**.
+This document records the security posture of Biteo Business at the time of the v1.0.0 repository preparation. It distinguishes issues that are **fixed now** from those that are **documented and require future architectural change**.
 
 ## Status legend
 

@@ -1,6 +1,6 @@
 {
-    "name": "biteo_business",
-    "short_name": "biteo_business",
+    "name": "Biteo Business",
+    "short_name": "Biteo Business",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,8 +1,8 @@
-# Bito Business
+# Biteo Business
 
-Company and business management platform for the Bito ecosystem.
+Company and business management platform for the Biteo ecosystem.
 
-**Bito Business** is a Flutter-based admin dashboard used to operate the Bito food-delivery/restaurant platform. It is the internal operations panel for managing vendors, users, orders and earnings, offers and coupons, notifications, support tickets, and AI-assistant conversations. It is built on Google Firebase (Authentication, Cloud Firestore, Cloud Storage) and integrates a Cloud Run endpoint for push notifications and a Telegram bot for operational alerts.
+**Biteo Business** is a Flutter-based admin dashboard used to operate the Biteo food-delivery/restaurant platform. It is the internal operations panel for managing vendors, users, orders and earnings, offers and coupons, notifications, support tickets, and AI-assistant conversations. It is built on Google Firebase (Authentication, Cloud Firestore, Cloud Storage) and integrates a Cloud Run endpoint for push notifications and a Telegram bot for operational alerts.
 
 > **Warning — authentication architecture.** The current admin gate uses a **client-side TOTP check** with a compile-time secret. This is a **CRITICAL SECURITY ARCHITECTURE ISSUE** and is documented as such. Any secret compiled into a Flutter client can be extracted. It is recommended that admin authentication be moved to a **server-side authentication/verification** mechanism before production deployment. See [docs/security.md](docs/security.md).
 
@@ -56,8 +56,8 @@ Company and business management platform for the Bito ecosystem.
 
 ```bash
 # 1. Clone the repository
-git clone <your-repository-url> bito-business
-cd bito-business
+git clone <your-repository-url> biteo-business
+cd biteo-business
 
 # 2. Fetch dependencies
 flutter pub get
@@ -112,7 +112,7 @@ flutter test
 ## Project Structure
 
 ```
-bito-business/
+biteo-business/
 ├── lib/                    # Application source (Dart)
 │   ├── main.dart           # App entry point; Firebase init; Telegram listeners
 │   ├── auth_screen.dart    # Admin TOTP gate (client-side; see Security)

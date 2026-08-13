@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:biteo_business/main.dart';
 
 void main() {
-  testWidgets('Bito Business renders the admin access screen',
+  testWidgets('Biteo Business renders the admin access screen',
       (WidgetTester tester) async {
     // Use a phone-sized portrait viewport so the AuthScreen content does not
     // overflow the small default test surface (800x600).

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Bito Business is a Flutter client that depends on Google Firebase services. Deploying it involves:
+Biteo Business is a Flutter client that depends on Google Firebase services. Deploying it involves:
 
 1. Building the client (web and/or Android).
 2. Configuring the Firebase project (Authentication, Firestore, Storage).
