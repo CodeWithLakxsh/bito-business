@@ -6,6 +6,7 @@
 - Android SDK and/or Chrome for the platforms you target.
 - A Firebase project. Biteo Business targets **Android** and **Web** (other platforms throw `UnsupportedError` in `lib/firebase_options.dart`).
 - Optional: FlutterFire CLI (`dart pub global activate flutterfire_cli`) to regenerate Firebase config.
+- General information about Biteo: official website — https://www.biteo.in/
 
 ## Setup
 

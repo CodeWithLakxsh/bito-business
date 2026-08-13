@@ -7,6 +7,7 @@ All notable changes to this project are documented in this file.
 ### Added
 
 - Initial Biteo Business release.
+- Official Biteo website reference: https://www.biteo.in/
 - Admin dashboard with vendor, user, order, and earnings views.
 - Vendor onboarding flow (Firebase Auth account creation, logo upload to Cloud Storage, Firestore vendor document with geolocation).
 - User management (list, block/unblock, per-user analytics and order history).
