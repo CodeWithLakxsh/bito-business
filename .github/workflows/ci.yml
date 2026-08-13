@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    name: Analyze, test and build (web)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.FLUTTER_HOME }}/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Fetch dependencies
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      # Web build requires no google-services.json and compiles with the
+      # placeholder firebase_options.dart. A harmless ADMIN_TOTP_SECRET is
+      # supplied because the app reads it at compile time. CI never uses a
+      # real credential; production values are provided through a secure
+      # channel (e.g. a CI secret) when deploying.
+      - name: Build web (release)
+        run: flutter build web --release --dart-define=ADMIN_TOTP_SECRET=CI_PLACEHOLDER

@@ -1,0 +1,101 @@
+# Architecture
+
+## Overview
+
+Bito Business is a Flutter admin dashboard that operates the Bito food-delivery/restaurant ecosystem. It is a thin client over Google Firebase services, with two additional integrations:
+
+1. A **Cloud Run HTTP endpoint** used to fan out push notifications to all users.
+2. A **Telegram bot** used to push operational alerts (new support tickets, AI representative requests, blocked users) to an ops chat.
+
+There is no application-owned backend server in this repository; Firebase provides the backend.
+
+## Runtime flow
+
+```
+Flutter app (this repo)
+   │  Firebase SDK
+   ├─▶ Firebase Authentication      (vendor account creation)
+   ├─▶ Cloud Firestore              (all business data)
+   ├─▶ Cloud Storage                (vendor logo images)
+   │  HTTP
+   ├─▶ Cloud Run endpoint           (push notifications)
+   └─▶ api.telegram.org             (operational alerts)
+```
+
+## Entry point
+
+`lib/main.dart`:
+
+1. Configures system UI (edge-to-edge).
+2. Initializes Firebase via `DefaultFirebaseOptions.currentPlatform` (`lib/firebase_options.dart`).
+3. Starts global realtime listeners (`NotificationListenerService.start()`) that push Telegram alerts for:
+   - new `support_tickets`,
+   - `ai_chats` with `representativeRequested == true`,
+   - `users` where `isBlocked` becomes `true`.
+4. Launches `MyApp`, whose `home` is `AuthScreen`.
+
+## Screens (lib/)
+
+| File | Purpose |
+|---|---|
+| `auth_screen.dart` | Admin gate: client-side TOTP check. **Security limitation — see docs/security.md.** |
+| `dashboard_home_screen.dart` | Vendor/user metrics and quick navigation. |
+| `vendor_form_screen.dart` | Admin shell (sidebar + page switching) and the restaurant onboarding form. |
+| `users_screen.dart`, `user_detail_screen.dart`, `user_order_history_screen.dart` | User list, per-user analytics, order history. |
+| `active_users_screen.dart`, `blocked_users_screen.dart` | Inline block/unblock lists. |
+| `active_vendors_screen.dart`, `blocked_vendors_screen.dart` | Vendor status management. |
+| `join_requests_screen.dart` | Vendor join-request approval. |
+| `vendors_screen.dart` | Placeholder ("Vendor Screen"). |
+| `notifications_screen.dart`, `send_notification_screen.dart`, `notification_sender_screen.dart` | Notifications composer + push. |
+| `firebase_notification_service.dart` | Writes notification documents to Firestore. |
+| `offers_screen.dart`, `create_coupon_screen.dart`, `coupon_model.dart` | Offers/coupons management. |
+| `earnings_screen.dart` | GMV/profit analytics derived from `orders`. |
+| `support_screen.dart`, `support_chat_screen.dart` | Support ticket list and admin chat. |
+| `ai_chat_monitor_screen.dart`, `ai_chat_detail_screen.dart`, `ai_management_screen.dart` | AI conversation monitoring and settings. |
+| `telegram_service.dart` | Telegram HTTP helper. |
+| `notification_listener_service.dart` | Realtime listeners → Telegram. |
+| `sidebar_widget.dart` | Empty placeholder. |
+
+## Firestore collections
+
+| Collection | Read | Write | Used for |
+|---|---|---|---|
+| `users` | Yes | Yes | User profiles and block status |
+| `vendors` | Yes | Yes | Vendor records and onboarding |
+| `orders` | Yes | No | Earnings and user analytics |
+| `notifications` | Yes | Yes | In-app notification documents |
+| `admin_notifications` | Yes | Yes | Admin-sent notifications |
+| `offers` | Yes | Yes | Offers |
+| `coupons` | No | Yes | Coupon codes (note: `offers_screen` reads `offers`) |
+| `support_tickets` | Yes | Yes | Support tickets |
+| `support_messages` | Yes | Yes | Support chat messages |
+| `ai_chats` | Yes | Yes | User↔AI conversations |
+| `ai_chat_messages` | Yes | Yes | AI chat messages |
+| `ai_settings` (doc `main`) | Yes | Yes | AI feature settings |
+| `vendor_join_requests` | Yes | Yes | Vendor onboarding requests |
+
+## Authentication
+
+- **Admin access:** client-side TOTP gate (`auth_screen.dart`). The shared secret is read at compile time from `ADMIN_TOTP_SECRET` (`--dart-define`). See the security warning below.
+- **Vendor accounts:** created with Firebase Auth email/password during onboarding (`vendor_form_screen.dart`).
+- **Legacy:** `login_screen.dart` (Google Sign-In) exists but is not reachable from any navigation path.
+
+> **Security warning:** TOTP is generated and verified **entirely on the client**. Anyone who extracts the compiled secret can generate valid codes. This is a `CRITICAL SECURITY ARCHITECTURE ISSUE`; see [docs/security.md](docs/security.md).
+
+## Notifications
+
+- Firestore documents are written to `notifications` (targeted per user/vendor) or `admin_notifications`.
+- `notification_sender_screen.dart` additionally POSTs a JSON payload to a Cloud Run endpoint to trigger device push.
+- `cors.json` at the repository root is the Cloud Storage CORS configuration used with `firebase storage:set-cors`.
+
+## Configuration sourcing
+
+| Configuration | Mechanism | Source |
+|---|---|---|
+| Firebase options | Compile-time constants | `lib/firebase_options.dart` (generated by FlutterFire CLI) |
+| Firebase Android config | File | `android/app/google-services.json` |
+| Admin TOTP secret | `--dart-define=ADMIN_TOTP_SECRET` | `lib/auth_screen.dart` |
+| Telegram bot token/chat ID | Compile-time constants | `lib/telegram_service.dart` |
+| Push endpoint URL | Compile-time constant | `lib/notification_sender_screen.dart` |
+
+No `.env` file is loaded at runtime. `.env.example` is documentation only.
